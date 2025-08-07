@@ -1,0 +1,6 @@
+build/
+assets/fonts/
+
+.idea/
+.dart_tool/
+*.log

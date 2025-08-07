@@ -1,0 +1,32 @@
+name: otp_plus
+description: "A Flutter package for OTP input fields"
+version: 0.0.1
+homepage: https://github.com/fateme-shm/otp_plus
+repository: https://github.com/fateme-shm/otp_plus
+issue_tracker: https://github.com/fateme-shm/otp_plus/issues
+
+environment:
+  sdk: ^3.8.1
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  fonts:
+    - family: DM-sans
+      fonts:
+        - asset: assets/fonts/DMSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/DMSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/DMSans-Bold.ttf
+          weight: 600
+        - asset: assets/fonts/DMSans-Bold.ttf
+          weight: 700
