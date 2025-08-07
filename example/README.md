@@ -1,6 +1,9 @@
 # otp\_plus
 
-A customizable Flutter OTP (One-Time Password) input widget package inspired by popular pin code fields libraries. `otp_plus` offers enhanced flexibility, styling, and input management for OTP or PIN entry, supporting both individual input boxes and paste detection with seamless input distribution.
+A customizable Flutter OTP (One-Time Password) input widget package inspired by popular pin code
+fields libraries. `otp_plus` offers enhanced flexibility, styling, and input management for OTP or
+PIN entry, supporting both individual input boxes and paste detection with seamless input
+distribution.
 
 ## Features
 
@@ -13,6 +16,8 @@ A customizable Flutter OTP (One-Time Password) input widget package inspired by 
 * RTL and LTR text direction support
 * Complete control over input decoration and text style
 * Callback on OTP completion to easily handle entered codes
+
+![OTP Plus Demo](assets/image/demo.png)
 
 ## Installation
 
@@ -28,8 +33,6 @@ Then run:
 ```bash
 flutter pub get
 ```
-
-![OTP Plus Demo](assets/image/demo.png)
 
 ## Usage
 
@@ -68,7 +71,7 @@ class MyOtpScreen extends StatelessWidget {
 ### `OtpPlusInputs`
 
 | Parameter               | Type                     | Description                                                      | Default                    |
-| ----------------------- | ------------------------ | ---------------------------------------------------------------- | -------------------------- |
+|-------------------------|--------------------------|------------------------------------------------------------------|----------------------------|
 | `shape`                 | `OtpFieldShape`          | Shape of each OTP input field (`square`, `underline`, `circle`). | **Required**               |
 | `length`                | `int`                    | Number of OTP digits to input.                                   | **Required**               |
 | `textStyle`             | `TextStyle?`             | Custom text style for digits.                                    | `null`                     |
@@ -110,7 +113,8 @@ Defines the visual style of the OTP input fields:
 ## Notes
 
 * Paste handling currently does **not** support web platform due to clipboard API limitations.
-* The widget automatically manages focus navigation between fields on input and backspace key presses.
+* The widget automatically manages focus navigation between fields on input and backspace key
+  presses.
 * Use `onCompleted` to capture the final OTP code when all fields are filled.
 * The widget uses `TextInputFormatter` to restrict input to single digits.
 

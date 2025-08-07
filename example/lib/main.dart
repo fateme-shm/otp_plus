@@ -48,6 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 shape: OtpFieldShape.square,
                 size: 50,
                 obscureText: true,
+                borderColor: Colors.red,
+                focusedBorderColor: Colors.red,
                 //Add optional values here
                 onCompleted: (code) {
                   // Add OTP verification logic here
