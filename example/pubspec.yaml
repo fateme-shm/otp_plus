@@ -2,6 +2,7 @@ name: example
 description: "example for otp_plus package and usage of package in example file"
 
 version: 1.0.0+1
+publish_to: none
 
 environment:
   sdk: ^3.8.1

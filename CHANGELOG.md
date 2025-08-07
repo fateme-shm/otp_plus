@@ -19,3 +19,7 @@
 ## \[0.0.2] - 2025-08-07
 
 * Update README.md
+
+## \[0.0.3] - 2025-08-07
+
+* Change pubspec.yaml description
