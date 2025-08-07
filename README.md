@@ -17,7 +17,7 @@ distribution.
 * Complete control over input decoration and text style
 * Callback on OTP completion to easily handle entered codes
 
-![OTP Plus Demo](assets/image/demo.png)
+![OTP Plus Demo](https://raw.githubusercontent.com/fateme-shm/otp_plus/main/assets/image/demo.png)
 
 ## Installation
 
@@ -25,7 +25,7 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  otp_plus: ^1.0.0
+  otp_plus: ^1.0.1
 ```
 
 Then run:

@@ -1,6 +1,6 @@
 name: otp_plus
 description: "A Flutter package for OTP input fields"
-version: 0.0.1
+version: 1.0.1
 homepage: https://github.com/fateme-shm/otp_plus
 repository: https://github.com/fateme-shm/otp_plus
 issue_tracker: https://github.com/fateme-shm/otp_plus/issues

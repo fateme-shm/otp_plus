@@ -1,6 +1,6 @@
 # Changelog
 
-## \[0.0.1] - 2025-08-06
+## \[1.0.0] - 2025-08-06
 
 ### Added
 
@@ -15,3 +15,7 @@
     * Callback triggered on OTP completion.
     * Support for LTR and RTL text directions.
     * Custom context menu with paste functionality (excluding web platform).
+
+## \[1.0.1] - 2025-08-07
+
+* Update README.md
