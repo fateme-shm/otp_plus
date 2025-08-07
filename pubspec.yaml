@@ -1,5 +1,5 @@
 name: otp_plus
-description: "A Flutter package for OTP input fields"
+description: 'A Flutter package that auto-fills OTPs from SMS or other sources into text fields, enabling seamless user authentication and improving the sign-in experience.'
 version: 0.0.2
 homepage: https://github.com/fateme-shm/otp_plus
 repository: https://github.com/fateme-shm/otp_plus
