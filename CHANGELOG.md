@@ -1,6 +1,6 @@
 # Changelog
 
-## \[1.0.0] - 2025-08-06
+## \[0.0.1] - 2025-08-06
 
 ### Added
 
@@ -16,6 +16,6 @@
     * Support for LTR and RTL text directions.
     * Custom context menu with paste functionality (excluding web platform).
 
-## \[1.0.1] - 2025-08-07
+## \[0.0.2] - 2025-08-07
 
 * Update README.md
