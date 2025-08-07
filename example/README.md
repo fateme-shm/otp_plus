@@ -29,6 +29,8 @@ Then run:
 flutter pub get
 ```
 
+![OTP Plus Demo](assets/image/demo.png)
+
 ## Usage
 
 ```dart
