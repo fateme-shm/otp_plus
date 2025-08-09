@@ -2,13 +2,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// A customizable OTP (One-Time Password) input widget that supports:
-/// - Multiple input fields
-/// - Paste detection with automatic field distribution
-/// - Obscured input
-/// - Custom styling
+/// otp_plus: A Flutter package providing customizable OTP input widgets.
 ///
-/// Part of the `otp_plus` package.
+/// This widget (`OtpPlusInputs`) supports multiple OTP input fields with features such as:
+/// - Paste detection and distribution across fields
+/// - Obscured input for sensitive codes
+/// - Flexible styling and layout options…
+/// - RTL and LTR support with customizable text direction
+///
+/// Usage example:
+/// ```dart
+/// OtpPlusInputs(
+///   length: 6,
+///   shape: OtpFieldShape.square,
+///   onCompleted: (code) {
+///     print('OTP Entered: $code');
+///   },
+/// )
+/// ```
 class OtpPlusInputs extends StatefulWidget {
   /// Defines the shape of the OTP input fields (e.g., box, circle).
   final OtpFieldShape shape;
@@ -29,15 +40,15 @@ class OtpPlusInputs extends StatefulWidget {
   final String obscuringCharacter;
 
   /// Horizontal spacing between each digit field
-  final double spacing;
+  final double horizontalSpacing;
 
   /// Width & height of each input box
   final double size;
 
   /// Vertical spacing when inputs wrap to the next line
-  final double runSpacing;
+  final double verticalSpacing;
 
-  /// Text direction (LTR or RTL)
+  /// Text direction of hole widget(LTR or RTL)
   final TextDirection textDirection;
 
   /// Cursor color
@@ -88,6 +99,12 @@ class OtpPlusInputs extends StatefulWidget {
   /// Called when all OTP digits are completed
   final void Function(String code)? onCompleted;
 
+  /// Called whenever the OTP input changes.
+  final void Function(String code)? onChanged;
+
+  /// Provides the final combined code as a [String].
+  final void Function(String code)? onSubmit;
+
   /// Border color for the input field in its default state.
   final Color? borderColor;
 
@@ -106,8 +123,8 @@ class OtpPlusInputs extends StatefulWidget {
     this.onCompleted,
     this.obscureText = false,
     this.enabled,
-    this.spacing = 12,
-    this.runSpacing = 12,
+    this.horizontalSpacing = 12,
+    this.verticalSpacing = 12,
     this.cursorColor = Colors.black,
     this.textDirection = TextDirection.ltr,
     this.undoController,
@@ -128,6 +145,8 @@ class OtpPlusInputs extends StatefulWidget {
     this.borderColor,
     this.focusedBorderColor,
     this.errorBorderColor,
+    this.onChanged,
+    this.onSubmit,
   });
 
   @override
@@ -190,6 +209,9 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
       if (index < widget.length - 1) {
         FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
       } else {
+        //If last fields do not unfocus
+        if (fullCode().length == widget.length) return;
+
         FocusScope.of(context).unfocus(); // All fields filled
       }
     }
@@ -199,7 +221,7 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
     }
 
     // Trigger the onCompleted callback with the pasted value
-    _handleOnCompleted(value);
+    _handleOnCompleted();
   }
 
   /// Handles the event when the OTP input process is completed.
@@ -219,15 +241,10 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
   ///   OTP has been entered, preventing premature triggers.
   /// - It relies on the list `_controllers` maintaining one controller per
   ///   OTP digit input field.
-  void _handleOnCompleted(String value) {
-    // Build full OTP from all controllers
-    String fullCode = _controllers
-        .map((TextEditingController c) => c.text)
-        .join();
-
+  void _handleOnCompleted() {
     // Only trigger callback if all fields are filled
-    if (fullCode.length == widget.length) {
-      widget.onCompleted?.call(fullCode);
+    if (fullCode().length == widget.length) {
+      widget.onCompleted?.call(fullCode());
     }
   }
 
@@ -306,8 +323,43 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
       }
 
       // Trigger the onCompleted callback with the pasted value
-      _handleOnCompleted('');
+      _handleOnCompleted();
+
+      _handleOnChanges();
+
+      _handleOnSubmit();
     }
+  }
+
+  /// Builds and returns the complete OTP value from all text controllers.
+  String fullCode() {
+    // Concatenate the text values from each OTP field's controller
+    // into a single string representing the full OTP.
+    String fullCode = _controllers
+        // Extract text from each controller
+        .map((TextEditingController c) => c.text)
+        .join(); // Combine into one string without separators
+
+    return fullCode; // Return the concatenated OTP
+  }
+
+  /// Handles changes in any of the OTP fields by calling the `onChanged` callback.
+  ///
+  /// This is triggered whenever the user modifies any OTP input field.
+  /// It sends the current full OTP value to the parent widget, if the
+  /// `onChanged` callback is provided.
+  void _handleOnChanges() {
+    widget.onChanged?.call(fullCode());
+  }
+
+  /// Handles OTP submission by calling the `onSubmit` callback.
+  ///
+  /// This should be triggered when the user finishes entering the OTP
+  /// (e.g., after filling the last field or pressing a submit action).
+  /// It sends the final OTP value to the parent widget, if the
+  /// `onSubmit` callback is provided.
+  void _handleOnSubmit() {
+    widget.onSubmit?.call(fullCode());
   }
 
   @override
@@ -317,120 +369,129 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
     );
 
     return Center(
-      child: Wrap(
-        spacing: widget.spacing,
-        runSpacing: widget.runSpacing,
-        children: List.generate(widget.length, (int index) {
-          return KeyboardListener(
-            focusNode: _keyboardFocusNodes[index],
-            onKeyEvent: (event) => _onBackPressClick(event, index),
-            child: SizedBox(
-              width: widget.size,
-              height: widget.size,
-              child: TextField(
-                contextMenuBuilder:
-                    (
-                      BuildContext context,
-                      EditableTextState editableTextState,
-                    ) {
-                      return AdaptiveTextSelectionToolbar.buttonItems(
-                        anchors: editableTextState.contextMenuAnchors,
-                        buttonItems: [
-                          ContextMenuButtonItem(
-                            onPressed: () async {
-                              // Close the context menu
-                              Navigator.of(context).maybePop();
+      child: Directionality(
+        textDirection: widget.textDirection,
+        child: Wrap(
+          spacing: widget.horizontalSpacing,
+          runSpacing: widget.verticalSpacing,
+          children: List.generate(widget.length, (int index) {
+            return KeyboardListener(
+              focusNode: _keyboardFocusNodes[index],
+              onKeyEvent: (event) => _onBackPressClick(event, index),
+              child: SizedBox(
+                width: widget.size,
+                height: widget.size,
+                child: TextField(
+                  contextMenuBuilder:
+                      (
+                        BuildContext context,
+                        EditableTextState editableTextState,
+                      ) {
+                        return AdaptiveTextSelectionToolbar.buttonItems(
+                          anchors: editableTextState.contextMenuAnchors,
+                          buttonItems: [
+                            ContextMenuButtonItem(
+                              onPressed: () async {
+                                // Close the context menu
+                                Navigator.of(context).maybePop();
 
-                              // Trigger your custom paste logic
-                              _handlePaste(index);
-                            },
-                            label: 'Paste',
-                          ),
-                        ],
-                      );
-                    },
-                controller: _controllers[index],
-                focusNode: _focusNodes[index],
-                textDirection: widget.textDirection,
-                textAlign: widget.textAlign,
-                textAlignVertical: widget.textAlignVertical,
-                keyboardType: TextInputType.number,
-                textCapitalization: widget.textCapitalization,
-                obscureText: widget.obscureText,
-                obscuringCharacter: widget.obscuringCharacter,
-                cursorColor: widget.cursorColor,
-                cursorWidth: widget.cursorWidth,
-                cursorHeight: widget.cursorHeight,
-                cursorRadius: widget.cursorRadius,
-                cursorOpacityAnimates: widget.cursorOpacityAnimates,
-                enabled: widget.enabled,
-                ignorePointers: widget.ignorePointers,
-                style:
-                    widget.textStyle ??
-                    TextStyle(
-                      fontSize: widget.size * 0.4,
-                      fontWeight: FontWeight.w400,
-                    ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(1),
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                decoration:
-                    widget.decoration ??
-                    InputDecoration(
-                      contentPadding:
-                          widget.contentPadding ??
-                          const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 10,
-                          ),
-                      border: widget.shape == OtpFieldShape.underline
-                          ? UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color:
-                                    widget.borderColor ??
-                                    Colors.grey.withValues(alpha: 0.5),
-                              ),
-                            )
-                          : OutlineInputBorder(
-                              borderRadius: borderRadius,
-                              borderSide: BorderSide(
-                                color:
-                                    widget.borderColor ??
-                                    Colors.grey.withValues(alpha: 0.5),
-                              ),
+                                // Trigger your custom paste logic
+                                _handlePaste(index);
+                              },
+                              label: 'Paste',
                             ),
-                      focusedBorder: widget.shape == OtpFieldShape.underline
-                          ? UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: widget.borderColor ?? Colors.black,
-                              ),
-                            )
-                          : OutlineInputBorder(
-                              borderRadius: borderRadius,
-                              borderSide: BorderSide(
-                                color:
-                                    widget.focusedBorderColor ?? Colors.black,
-                              ),
+                          ],
+                        );
+                      },
+                  controller: _controllers[index],
+                  focusNode: _focusNodes[index],
+                  textAlign: widget.textAlign,
+                  textAlignVertical: widget.textAlignVertical,
+                  keyboardType: TextInputType.number,
+                  textCapitalization: widget.textCapitalization,
+                  obscureText: widget.obscureText,
+                  obscuringCharacter: widget.obscuringCharacter,
+                  cursorColor: widget.cursorColor,
+                  cursorWidth: widget.cursorWidth,
+                  cursorHeight: widget.cursorHeight,
+                  cursorRadius: widget.cursorRadius,
+                  cursorOpacityAnimates: widget.cursorOpacityAnimates,
+                  enabled: widget.enabled,
+                  ignorePointers: widget.ignorePointers,
+                  style:
+                      widget.textStyle ??
+                      TextStyle(
+                        fontSize: widget.size * 0.4,
+                        fontWeight: FontWeight.w400,
+                      ),
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(1),
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  decoration:
+                      widget.decoration ??
+                      InputDecoration(
+                        contentPadding:
+                            widget.contentPadding ??
+                            const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 10,
                             ),
-                      errorBorder: widget.shape == OtpFieldShape.underline
-                          ? UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: widget.borderColor ?? Colors.red,
+                        border: widget.shape == OtpFieldShape.underline
+                            ? UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color:
+                                      widget.borderColor ??
+                                      Colors.grey.withValues(alpha: 0.5),
+                                ),
+                              )
+                            : OutlineInputBorder(
+                                borderRadius: borderRadius,
+                                borderSide: BorderSide(
+                                  color:
+                                      widget.borderColor ??
+                                      Colors.grey.withValues(alpha: 0.5),
+                                ),
                               ),
-                            )
-                          : OutlineInputBorder(
-                              borderRadius: borderRadius,
-                              borderSide: BorderSide(
-                                color: widget.errorBorderColor ?? Colors.red,
+                        focusedBorder: widget.shape == OtpFieldShape.underline
+                            ? UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: widget.borderColor ?? Colors.black,
+                                ),
+                              )
+                            : OutlineInputBorder(
+                                borderRadius: borderRadius,
+                                borderSide: BorderSide(
+                                  color:
+                                      widget.focusedBorderColor ?? Colors.black,
+                                ),
                               ),
-                            ),
-                    ),
-                onChanged: (value) => _onChanged(value, index),
+                        errorBorder: widget.shape == OtpFieldShape.underline
+                            ? UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: widget.borderColor ?? Colors.red,
+                                ),
+                              )
+                            : OutlineInputBorder(
+                                borderRadius: borderRadius,
+                                borderSide: BorderSide(
+                                  color: widget.errorBorderColor ?? Colors.red,
+                                ),
+                              ),
+                      ),
+                  onSubmitted: (String value) {
+                    _handleOnSubmit();
+                  },
+                  onChanged: (String value) {
+                    _handleOnChanges();
+
+                    _onChanged(value, index);
+                  },
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }

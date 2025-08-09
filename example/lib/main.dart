@@ -34,31 +34,32 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Test OTP Plus'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Input your code here:', style: TextStyle(fontSize: 20)),
-            const SizedBox(height: 30),
-            Center(
-              child: OtpPlusInputs(
-                length: 6,
-                shape: OtpFieldShape.square,
-                size: 50,
-                obscureText: true,
-                borderColor: Colors.red,
-                focusedBorderColor: Colors.red,
-                //Add optional values here
-                onCompleted: (code) {
-                  // Add OTP verification logic here
-                  debugPrint('OTP entered: $code');
-                },
-              ),
+        children: [
+          const SizedBox(height: 70),
+          const Text('Input your code here:', style: TextStyle(fontSize: 20)),
+          const SizedBox(height: 30),
+          Center(
+            child: OtpPlusInputs(
+              size: 50,
+              length: 6,
+              shape: OtpFieldShape.square,
+              textDirection: TextDirection.ltr,
+              onChanged: (code) {
+                debugPrint('On Changed : $code');
+              },
+              onSubmit: (code) {
+                debugPrint('On Submit : $code');
+              },
+              //Add optional values here
+              onCompleted: (code) {
+                // Add OTP verification logic here
+                debugPrint('OTP entered: $code');
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

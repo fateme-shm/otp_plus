@@ -25,7 +25,7 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  otp_plus: ^0.0.4
+  otp_plus: ^0.0.5
 ```
 
 Then run:
@@ -47,17 +47,20 @@ class MyOtpScreen extends StatelessWidget {
       appBar: AppBar(title: Text('Enter OTP')),
       body: Center(
         child: OtpPlusInputs(
-          length: 6,
-          shape: OtpFieldShape.underline,
-          obscureText: false,
-          spacing: 16,
           size: 50,
-          borderColor: Colors.grey,
-          focusedBorderColor: Colors.blue,
-          errorBorderColor: Colors.red,
+          length: 6,
+          shape: OtpFieldShape.square,
+          textDirection: TextDirection.ltr,
+          onChanged: (code) {
+            debugPrint('On Changed : $code');
+          },
+          onSubmit: (code) {
+            debugPrint('On Submit : $code');
+          },
+          //Add optional values here
           onCompleted: (code) {
-            // Handle OTP verification here
-            print('OTP Entered: $code');
+            // Add OTP verification logic here
+            debugPrint('OTP entered: $code');
           },
         ),
       ),

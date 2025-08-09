@@ -24,3 +24,7 @@
 
 ## \[0.0.4] - 2025-08-09
 * Fix problem in fonts
+
+## \[0.0.5] - 2025-08-09
+* Add onSubmit - onChanged functions
+* Add Directionality to otp inputs
