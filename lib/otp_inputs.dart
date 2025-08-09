@@ -515,10 +515,7 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
                         fontSize: widget.size * 0.4,
                         fontWeight: FontWeight.w400,
                       ),
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(1),
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
+                  inputFormatters: [LengthLimitingTextInputFormatter(1)],
                   decoration: InputDecoration(
                     contentPadding:
                         widget.contentPadding ??
