@@ -30,9 +30,6 @@ class OtpPlusInputs extends StatefulWidget {
   /// Custom text style for each digit
   final TextStyle? textStyle;
 
-  /// Custom decoration for the input fields
-  final InputDecoration? decoration;
-
   /// Whether to obscure the text (e.g., for passwords)
   final bool obscureText;
 
@@ -119,7 +116,6 @@ class OtpPlusInputs extends StatefulWidget {
     required this.shape,
     required this.length,
     this.textStyle,
-    this.decoration,
     this.onCompleted,
     this.obscureText = false,
     this.enabled,
@@ -428,57 +424,62 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
                     LengthLimitingTextInputFormatter(1),
                     FilteringTextInputFormatter.digitsOnly,
                   ],
-                  decoration:
-                      widget.decoration ??
-                      InputDecoration(
-                        contentPadding:
-                            widget.contentPadding ??
-                            const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 10,
+                  decoration: InputDecoration(
+                    contentPadding:
+                        widget.contentPadding ??
+                        const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
+                        ),
+                    enabledBorder: widget.shape == OtpFieldShape.underline
+                        ? UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: widget.borderColor ?? Colors.grey,
                             ),
-                        border: widget.shape == OtpFieldShape.underline
-                            ? UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color:
-                                      widget.borderColor ??
-                                      Colors.grey.withValues(alpha: 0.5),
-                                ),
-                              )
-                            : OutlineInputBorder(
-                                borderRadius: borderRadius,
-                                borderSide: BorderSide(
-                                  color:
-                                      widget.borderColor ??
-                                      Colors.grey.withValues(alpha: 0.5),
-                                ),
-                              ),
-                        focusedBorder: widget.shape == OtpFieldShape.underline
-                            ? UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: widget.borderColor ?? Colors.black,
-                                ),
-                              )
-                            : OutlineInputBorder(
-                                borderRadius: borderRadius,
-                                borderSide: BorderSide(
-                                  color:
-                                      widget.focusedBorderColor ?? Colors.black,
-                                ),
-                              ),
-                        errorBorder: widget.shape == OtpFieldShape.underline
-                            ? UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: widget.borderColor ?? Colors.red,
-                                ),
-                              )
-                            : OutlineInputBorder(
-                                borderRadius: borderRadius,
-                                borderSide: BorderSide(
-                                  color: widget.errorBorderColor ?? Colors.red,
-                                ),
-                              ),
-                      ),
+                          )
+                        : OutlineInputBorder(
+                            borderRadius: borderRadius,
+                            borderSide: BorderSide(
+                              color: widget.borderColor ?? Colors.grey,
+                            ),
+                          ),
+                    border: widget.shape == OtpFieldShape.underline
+                        ? UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: widget.borderColor ?? Colors.grey,
+                            ),
+                          )
+                        : OutlineInputBorder(
+                            borderRadius: borderRadius,
+                            borderSide: BorderSide(
+                              color: widget.borderColor ?? Colors.grey,
+                            ),
+                          ),
+                    focusedBorder: widget.shape == OtpFieldShape.underline
+                        ? UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: widget.borderColor ?? Colors.black,
+                            ),
+                          )
+                        : OutlineInputBorder(
+                            borderRadius: borderRadius,
+                            borderSide: BorderSide(
+                              color: widget.focusedBorderColor ?? Colors.black,
+                            ),
+                          ),
+                    errorBorder: widget.shape == OtpFieldShape.underline
+                        ? UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: widget.borderColor ?? Colors.red,
+                            ),
+                          )
+                        : OutlineInputBorder(
+                            borderRadius: borderRadius,
+                            borderSide: BorderSide(
+                              color: widget.errorBorderColor ?? Colors.red,
+                            ),
+                          ),
+                  ),
                   onSubmitted: (String value) {
                     _handleOnSubmit();
                   },

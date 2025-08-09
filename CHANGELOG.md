@@ -34,3 +34,6 @@
 
 ## \[0.0.7] - 2025-08-09
 * Remove fonts
+
+## \[0.0.8] - 2025-08-09
+* Fix problem in border color

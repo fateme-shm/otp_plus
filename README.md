@@ -20,7 +20,7 @@ distribution.
 ![OTP Plus Demo]
 </br>
 </br>
-<img src="https://raw.githubusercontent.com/fateme-shm/otp_plus/main/assets/image/demo.png" width="300" alt="OTP Plus Demo" />
+<img src="https://raw.githubusercontent.com/fateme-shm/otp_plus/main/demo.png" width="300" alt="OTP Plus Demo" />
 
 ## Installation
 
@@ -28,7 +28,7 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  otp_plus: ^0.0.7
+  otp_plus: ^0.0.8
 ```
 
 Then run:
