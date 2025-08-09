@@ -17,7 +17,8 @@ distribution.
 * Complete control over input decoration and text style
 * Callback on OTP completion to easily handle entered codes
 
-![OTP Plus Demo](https://raw.githubusercontent.com/fateme-shm/otp_plus/main/assets/image/demo.png)
+![OTP Plus Demo]
+<img src="https://raw.githubusercontent.com/fateme-shm/otp_plus/main/assets/image/demo.png" width="300" alt="OTP Plus Demo" />
 
 ## Installation
 
