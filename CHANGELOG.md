@@ -17,9 +17,10 @@
     * Custom context menu with paste functionality (excluding web platform).
 
 ## \[0.0.2] - 2025-08-07
-
 * Update README.md
 
 ## \[0.0.3] - 2025-08-07
-
 * Change pubspec.yaml description
+
+## \[0.0.4] - 2025-08-09
+* Fix problem in fonts
