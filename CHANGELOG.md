@@ -37,3 +37,6 @@
 
 ## \[0.0.8] - 2025-08-09
 * Fix problem in border color
+
+## \[0.0.9] - 2025-08-09
+* Fix problem in on Completed function

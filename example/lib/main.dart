@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
               //Add optional values here
               onCompleted: (code) {
                 // Add OTP verification logic here
-                debugPrint('OTP entered: $code');
+                debugPrint('OTP completed: $code');
               },
             ),
           ),

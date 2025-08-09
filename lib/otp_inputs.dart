@@ -206,7 +206,10 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
         FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
       } else {
         //If last fields do not unfocus
-        if (fullCode().length == widget.length) return;
+        if (fullCode().length == widget.length) {
+          _handleOnCompleted();
+          return;
+        }
 
         FocusScope.of(context).unfocus(); // All fields filled
       }
