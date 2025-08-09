@@ -18,6 +18,8 @@ distribution.
 * Callback on OTP completion to easily handle entered codes
 
 ![OTP Plus Demo]
+</br>
+</br>
 <img src="https://raw.githubusercontent.com/fateme-shm/otp_plus/main/assets/image/demo.png" width="300" alt="OTP Plus Demo" />
 
 ## Installation
