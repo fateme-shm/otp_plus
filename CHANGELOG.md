@@ -40,3 +40,10 @@
 
 ## \[0.0.9] - 2025-08-09
 * Fix problem in on Completed function
+
+## \[1.0.0] - 2025-08-10
+* Add onError, onSuccess functions
+* Handle error/success built in
+* Remove onSubmit function when user paste code
+* Change some functions name
+* Fix some bug

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:otp_plus/otp_plus.dart';
+import 'package:otp_plus/utils/enum/otp_field_shape.dart';
 
 void main() {
   testWidgets(
@@ -15,7 +17,7 @@ void main() {
             body: OtpPlusInputs(
               length: 4,
               shape: OtpFieldShape.square,
-              onCompleted: (code) {
+              onComplete: (code) {
                 completedCode = code;
               },
             ),

@@ -1,6 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+
+import 'package:otp_plus/utils/snack_bar.dart';
+import 'package:otp_plus/utils/enum/otp_field_shape.dart';
+import 'package:otp_plus/utils/enum/snack_bar_type.dart';
 
 /// otp_plus: A Flutter package providing customizable OTP input widgets.
 ///
@@ -15,12 +19,35 @@ import 'package:flutter/services.dart';
 /// OtpPlusInputs(
 ///   length: 6,
 ///   shape: OtpFieldShape.square,
-///   onCompleted: (code) {
+///   onComplete: (code) {
 ///     print('OTP Entered: $code');
 ///   },
 /// )
 /// ```
 class OtpPlusInputs extends StatefulWidget {
+  /// The parent [BuildContext] to use for showing UI elements such as snack bars.
+  /// If `null`, the widget will use its own context.
+  final BuildContext? parentContext;
+
+  /// The error message text to display when OTP validation fails.
+  /// If `null`, default error message will be shown.
+  final String? errorText;
+
+  /// The text for contextMenuBuilder
+  final String? pasteText;
+
+  /// The success message text to display when OTP validation passes.
+  /// If `null`, default success message will be shown.
+  final String? successText;
+
+  /// Callback triggered when OTP validation fails.
+  /// if use this default error validation not work
+  final void Function()? onError;
+
+  /// Callback triggered when OTP validation succeeds.
+  /// if use this default success validation not work
+  final void Function()? onSuccess;
+
   /// Defines the shape of the OTP input fields (e.g., box, circle).
   final OtpFieldShape shape;
 
@@ -94,7 +121,7 @@ class OtpPlusInputs extends StatefulWidget {
   final EdgeInsets? contentPadding;
 
   /// Called when all OTP digits are completed
-  final void Function(String code)? onCompleted;
+  final void Function(String code)? onComplete;
 
   /// Called whenever the OTP input changes.
   final void Function(String code)? onChanged;
@@ -113,47 +140,82 @@ class OtpPlusInputs extends StatefulWidget {
 
   const OtpPlusInputs({
     super.key,
+
+    // Required parameters
     required this.shape,
     required this.length,
-    this.textStyle,
-    this.onCompleted,
-    this.obscureText = false,
+
+    // Context and input behavior
+    this.parentContext,
     this.enabled,
-    this.horizontalSpacing = 12,
-    this.verticalSpacing = 12,
-    this.cursorColor = Colors.black,
-    this.textDirection = TextDirection.ltr,
     this.undoController,
     this.textInputAction,
     this.textCapitalization = TextCapitalization.none,
+    this.textDirection = TextDirection.ltr,
+
+    // Styling and layout
+    this.textStyle,
     this.style,
     this.strutStyle,
     this.textAlign = TextAlign.center,
     this.textAlignVertical = TextAlignVertical.center,
-    this.obscuringCharacter = '*',
     this.size = 50,
-    this.cursorWidth = 1.5,
+    this.horizontalSpacing = 12,
+    this.verticalSpacing = 12,
     this.contentPadding,
-    this.ignorePointers,
+
+    // Cursor customization
+    this.cursorColor = Colors.black,
+    this.cursorWidth = 1.5,
     this.cursorHeight,
     this.cursorRadius,
     this.cursorOpacityAnimates,
+
+    // Obscuring text
+    this.obscureText = false,
+    this.obscuringCharacter = '*',
+
+    // Border colors
     this.borderColor,
     this.focusedBorderColor,
     this.errorBorderColor,
+
+    // Callbacks
+    this.onComplete,
     this.onChanged,
     this.onSubmit,
+    this.onError,
+    this.onSuccess,
+
+    // Messages
+    this.errorText,
+    this.successText,
+
+    // Other
+    this.ignorePointers,
+    this.pasteText,
   });
 
   @override
-  State<OtpPlusInputs> createState() => _OtpPlusInputsState();
+  State<OtpPlusInputs> createState() => OtpPlusInputsState();
 }
 
-class _OtpPlusInputsState extends State<OtpPlusInputs> {
+class OtpPlusInputsState extends State<OtpPlusInputs> {
+  /// List of [FocusNode]s managing focus for each OTP input field.
+  /// Used to control and track focus state individually.
   late final List<FocusNode> _focusNodes;
+
+  /// Separate [FocusNode]s specifically for keyboard focus management,
+  /// allowing fine-grained control over keyboard interactions.
   late final List<FocusNode> _keyboardFocusNodes;
+
+  /// List of [TextEditingController]s for each OTP input field,
+  /// used to manage and listen to text input changes individually.
   late final List<TextEditingController> _controllers;
 
+  /// Initializes the OTP input fields with the specified length
+  /// before the widget builds for the first time.
+  /// Calls super.initState() after initialization to complete setup.
   @override
   void initState() {
     _initializeOtpFields(widget.length);
@@ -198,7 +260,7 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
   ///
   /// - Advances focus to the next field when one digit is entered.
   /// - Moves focus back to the previous field when cleared.
-  /// - Calls [onCompleted] if the total input matches the expected OTP length.
+  /// - Calls [onComplete] if the total input matches the expected OTP length.
   void _onChanged(String value, int index) {
     // If one character is entered, move to the next field
     if (value.length == 1) {
@@ -206,8 +268,8 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
         FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
       } else {
         //If last fields do not unfocus
-        if (fullCode().length == widget.length) {
-          _handleOnCompleted();
+        if (_retrieveFullCode().length == widget.length) {
+          _handleOnComplete();
           return;
         }
 
@@ -219,8 +281,8 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
       FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
     }
 
-    // Trigger the onCompleted callback with the pasted value
-    _handleOnCompleted();
+    // Trigger the onComplete callback with the pasted value
+    _handleOnComplete();
   }
 
   /// Handles the event when the OTP input process is completed.
@@ -231,7 +293,7 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
   /// of the entered code matches the expected OTP length (`widget.length`).
   ///
   /// If the input is complete (all fields filled), it triggers the
-  /// `onCompleted` callback, passing the full OTP code as an argument.
+  /// `onComplete` callback, passing the full OTP code as an argument.
   /// This allows the parent widget or consumer to respond appropriately,
   /// for example, by validating the OTP or proceeding with authentication.
   ///
@@ -240,10 +302,10 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
   ///   OTP has been entered, preventing premature triggers.
   /// - It relies on the list `_controllers` maintaining one controller per
   ///   OTP digit input field.
-  void _handleOnCompleted() {
+  void _handleOnComplete() {
     // Only trigger callback if all fields are filled
-    if (fullCode().length == widget.length) {
-      widget.onCompleted?.call(fullCode());
+    if (_retrieveFullCode().length == widget.length) {
+      widget.onComplete?.call(_retrieveFullCode());
     }
   }
 
@@ -263,7 +325,7 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
   ///
   /// This improves the user experience by mimicking natural keyboard
   /// navigation within segmented input fields like OTP codes.
-  void _onBackPressClick(KeyEvent event, int index) {
+  void _onBackButtonClick(KeyEvent event, int index) {
     // Check if the event is a key press (key down)
     if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.backspace &&
@@ -281,7 +343,7 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
   ///
   /// This method retrieves the plain text from the system clipboard, extracts only the digits,
   /// and distributes them into the OTP input fields represented by `_controllers`.
-  /// It also manages focus movement and triggers the `onCompleted` callback if the OTP is complete.
+  /// It also manages focus movement and triggers the `onComplete` callback if the OTP is complete.
   ///
   /// [tappedIndex] - The index of the field that was tapped (optional, could be used for smarter focus handling).
   /// This function not work in Web platform [kIsWeb]
@@ -321,17 +383,16 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
         _focusNodes.last.unfocus();
       }
 
-      // Trigger the onCompleted callback with the pasted value
-      _handleOnCompleted();
+      // Trigger the onComplete callback with the pasted value
+      _handleOnComplete();
 
+      // Trigger the `onChanged` callback whenever the OTP input changes.
       _handleOnChanges();
-
-      _handleOnSubmit();
     }
   }
 
   /// Builds and returns the complete OTP value from all text controllers.
-  String fullCode() {
+  String _retrieveFullCode() {
     // Concatenate the text values from each OTP field's controller
     // into a single string representing the full OTP.
     String fullCode = _controllers
@@ -348,7 +409,7 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
   /// It sends the current full OTP value to the parent widget, if the
   /// `onChanged` callback is provided.
   void _handleOnChanges() {
-    widget.onChanged?.call(fullCode());
+    widget.onChanged?.call(_retrieveFullCode());
   }
 
   /// Handles OTP submission by calling the `onSubmit` callback.
@@ -358,7 +419,38 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
   /// It sends the final OTP value to the parent widget, if the
   /// `onSubmit` callback is provided.
   void _handleOnSubmit() {
-    widget.onSubmit?.call(fullCode());
+    bool isOtpValid = _retrieveFullCode().length == widget.length;
+
+    widget.onSubmit?.call(_retrieveFullCode());
+
+    // Check if the entered OTP code length matches the expected length.
+    if (isOtpValid) {
+      // If an `onError` callback is provided, execute it.
+      if (widget.onError != null) {
+        widget.onError?.call();
+      } else {
+        // Otherwise, show a success snack bar with the provided or default message.
+        showSnackBar(
+          type: SnackBarType.success,
+          context: widget.parentContext ?? context,
+          message: widget.errorText ?? 'OTP code sent successfully.',
+        );
+      }
+    } else {
+      // If the OTP length does not match, trigger the `onSuccess` callback if provided.
+      if (widget.onSuccess != null) {
+        widget.onSuccess?.call();
+      } else {
+        // Otherwise, show an error snack bar with the provided or default error message.
+        showSnackBar(
+          type: SnackBarType.error,
+          context: widget.parentContext ?? context,
+          message:
+              widget.successText ??
+              'OTP code must be ${widget.length} characters long.',
+        );
+      }
+    }
   }
 
   @override
@@ -376,7 +468,7 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
           children: List.generate(widget.length, (int index) {
             return KeyboardListener(
               focusNode: _keyboardFocusNodes[index],
-              onKeyEvent: (event) => _onBackPressClick(event, index),
+              onKeyEvent: (event) => _onBackButtonClick(event, index),
               child: SizedBox(
                 width: widget.size,
                 height: widget.size,
@@ -397,7 +489,7 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
                                 // Trigger your custom paste logic
                                 _handlePaste(index);
                               },
-                              label: 'Paste',
+                              label: widget.pasteText ?? 'Paste',
                             ),
                           ],
                         );
@@ -500,10 +592,3 @@ class _OtpPlusInputsState extends State<OtpPlusInputs> {
     );
   }
 }
-
-/// Defines the visual shape style of the OTP input fields.
-///
-/// - `square`: Square boxes around each input.
-/// - `underline`: Underline style below each input.
-/// - `circle`: Circular borders around each input.
-enum OtpFieldShape { square, underline, circle }

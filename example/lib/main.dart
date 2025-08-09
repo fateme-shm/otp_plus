@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:otp_plus/otp_plus.dart';
+import 'package:otp_plus/utils/enum/otp_field_shape.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,12 +39,20 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
           const SizedBox(height: 70),
-          const Text('Input your code here:', style: TextStyle(fontSize: 20)),
+          Text(
+            'Input your code here:',
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.black,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
           const SizedBox(height: 30),
           Center(
             child: OtpPlusInputs(
               size: 50,
               length: 6,
+              parentContext: context,
               shape: OtpFieldShape.square,
               textDirection: TextDirection.ltr,
               onChanged: (code) {
@@ -53,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 debugPrint('On Submit : $code');
               },
               //Add optional values here
-              onCompleted: (code) {
+              onComplete: (code) {
                 // Add OTP verification logic here
                 debugPrint('OTP completed: $code');
               },
