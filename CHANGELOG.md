@@ -28,3 +28,6 @@
 ## \[0.0.5] - 2025-08-09
 * Add onSubmit - onChanged functions
 * Add Directionality to otp inputs
+
+## \[0.0.6] - 2025-08-09
+* Change width of demo picture
