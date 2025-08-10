@@ -383,9 +383,6 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
         _focusNodes.last.unfocus();
       }
 
-      // Trigger the onComplete callback with the pasted value
-      _handleOnComplete();
-
       // Trigger the `onChanged` callback whenever the OTP input changes.
       _handleOnChanges();
     }
