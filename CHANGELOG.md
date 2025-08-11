@@ -61,6 +61,10 @@
 
 * remove FilteringTextInputFormatter.digitsOnly
 
-## \[1.0.1] - 2025-08-11
+## \[1.0.2] - 2025-08-11
 
 * remove _handleOnComplete in paste function
+
+## \[1.0.3] - 2025-08-11
+
+* handle problem in paste function

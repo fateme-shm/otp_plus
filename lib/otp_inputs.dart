@@ -201,6 +201,16 @@ class OtpPlusInputs extends StatefulWidget {
 }
 
 class OtpPlusInputsState extends State<OtpPlusInputs> {
+  /// A flag to indicate whether the OTP fields are currently being filled
+  /// programmatically via the paste operation.
+  ///
+  /// When `true`, it tells the widget to temporarily skip certain event handlers
+  /// (like `onChanged`) to avoid triggering focus changes or validation logic
+  /// that are meant for manual typing.
+  /// This prevents issues such as cursor jumping or values being overwritten
+  /// during the paste process.
+  bool isPasting = false;
+
   /// List of [FocusNode]s managing focus for each OTP input field.
   /// Used to control and track focus state individually.
   late final List<FocusNode> _focusNodes;
@@ -261,7 +271,7 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
   /// - Advances focus to the next field when one digit is entered.
   /// - Moves focus back to the previous field when cleared.
   /// - Calls [onComplete] if the total input matches the expected OTP length.
-  void _onChanged(String value, int index) {
+  void _onTextChanged(String value, int index) {
     // If one character is entered, move to the next field
     if (value.length == 1) {
       if (index < widget.length - 1) {
@@ -348,6 +358,8 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
   /// [tappedIndex] - The index of the field that was tapped (optional, could be used for smarter focus handling).
   /// This function not work in Web platform [kIsWeb]
   Future<void> _handlePaste(int tappedIndex) async {
+    isPasting = true;
+
     // Get text data from the system clipboard
     ClipboardData? clipboard = await Clipboard.getData(Clipboard.kTextPlain);
 
@@ -385,7 +397,10 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
 
       // Trigger the `onChanged` callback whenever the OTP input changes.
       _handleOnChanges();
+      _handleOnComplete();
     }
+
+    isPasting = false;
   }
 
   /// Builds and returns the complete OTP value from all text controllers.
@@ -573,9 +588,11 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
                     _handleOnSubmit();
                   },
                   onChanged: (String value) {
-                    _handleOnChanges();
+                    // Skip during paste
+                    if (isPasting) return;
 
-                    _onChanged(value, index);
+                    _handleOnChanges();
+                    _onTextChanged(value, index);
                   },
                 ),
               ),
