@@ -436,7 +436,7 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
     widget.onSubmit?.call(_retrieveFullCode());
 
     // Check if the entered OTP code length matches the expected length.
-    if (isOtpValid) {
+    if (!isOtpValid) {
       // If an `onError` callback is provided, execute it.
       if (widget.onError != null) {
         widget.onError?.call();

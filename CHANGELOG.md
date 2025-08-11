@@ -68,3 +68,7 @@
 ## \[1.0.3] - 2025-08-12
 
 * Fix problem in paste function
+* 
+## \[1.0.4] - 2025-08-12
+
+* Fix problem in onError/onSuccess
