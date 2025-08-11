@@ -72,3 +72,7 @@
 ## \[1.0.4] - 2025-08-12
 
 * Fix problem in onError/onSuccess
+
+## \[1.0.5] - 2025-08-12
+
+* Fix reported problem
