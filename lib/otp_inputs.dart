@@ -142,8 +142,8 @@ class OtpPlusInputs extends StatefulWidget {
     this.textAlign = TextAlign.center,
     this.textAlignVertical = TextAlignVertical.center,
     this.size = 50,
-    this.horizontalSpacing = 12,
-    this.verticalSpacing = 12,
+    this.horizontalSpacing = 10,
+    this.verticalSpacing = 10,
     this.contentPadding,
 
     // Cursor customization
@@ -232,31 +232,97 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
     });
   }
 
-  /// Handles user input changes for each OTP field.
+  /// Finds the last empty text controller before the given index.
   ///
-  /// - Advances focus to the next field when one digit is entered.
-  /// - Moves focus back to the previous field when cleared.
-  void _onTextChanged(String value, int index) {
-    // If one character is entered, move to the next field
-    if (value.length == 1) {
-      if (index < widget.length - 1) {
-        FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
-      } else {
-        //If last fields do not unfocus
-        if (_retrieveFullCode().length == widget.length) {
-          _handleOnComplete();
-          return;
-        }
+  /// This method scans all controllers from the start up to (but not including)
+  /// the given `index`, and tries to identify if there's a sequence of empty
+  /// controllers. It returns the index of the first empty controller in the last
+  /// continuous sequence of empty controllers before `index`.
+  ///
+  /// Returns:
+  /// - The index of the last empty controller before `index` if found.
+  /// - Otherwise, returns -1 indicating no suitable empty controller was found.
+  int _lastEmptyTextController(int index) {
+    // Initialize result as not found
+    int textControllerIndex = -1;
 
-        FocusScope.of(context).unfocus(); // All fields filled
+    for (int i = 0; i < index; i++) {
+      if (_controllers[i].text.isEmpty) {
+        // Found an empty controller at position i
+
+        if (textControllerIndex == -1) {
+          // Mark this as candidate if not already set
+          textControllerIndex = i;
+        }
+      } else if (textControllerIndex != -1) {
+        // If previously found an empty controller but now found a non-empty one,
+        // reset because empty controllers are not continuous before index
+        textControllerIndex = -1;
       }
     }
-    // If field is cleared, move focus back to the previous one
-    else if (value.isEmpty && index > 0) {
-      FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
+
+    // Return index or -1 if none found
+    return textControllerIndex;
+  }
+
+  /// Handles changes to the text field at a given index.
+  ///
+  /// This function manages focus and text distribution across OTP fields when
+  /// the user types or deletes input. Specifically:
+  ///
+  /// - Checks if there are empty controllers before the current index, and if so,
+  ///   moves focus back to the last empty controller to fill gaps.
+  /// - If user inputs multiple characters (paste or fast typing), it splits them
+  ///   between the current and next field.
+  /// - Advances focus to the next field when a single character is entered.
+  /// - Moves focus back to the previous field if the current field is cleared.
+  /// - Calls `_handleOnComplete()` to check if OTP input is complete.
+  void _onTextChanged(String value, int index) async {
+    int lastEmptyIndex = _lastEmptyTextController(index);
+
+    if (lastEmptyIndex != -1) {
+      // If found an empty controller before current, clear current controller's text
+      _controllers[index].text = '';
+
+      // Redirect index to the last empty controller to fill gap
+      index = lastEmptyIndex;
+
+      // Set focus to that empty controller
+      FocusScope.of(context).requestFocus(_focusNodes[index]);
+
+      // Append the current input value into the empty controller's text
+      _controllers[index].text += value;
+    }
+    if (value.length > 1) {
+      // If user pasted or typed multiple characters
+      if (index < widget.length - 1) {
+        // Assign first character to current controller
+        _controllers[index].text = value.substring(0, 1);
+
+        // Assign second character to next controller
+        _controllers[index + 1].text = value.substring(1, 2);
+
+        // Move focus to the next controller to continue input
+        FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+      }
+    } else if (value.length == 1) {
+      // If user entered a single character and this is not the last field,
+      // move focus forward to the next field automatically
+      if (index < widget.length - 1) {
+        FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+      }
+    } else if (value.isEmpty) {
+      // If user cleared the current field:
+      if (index > 0) {
+        // Move focus back to previous field to allow editing/deletion
+        FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
+      } else {
+        // If at the first field, just refocus it
+        FocusScope.of(context).requestFocus(_focusNodes.first);
+      }
     }
 
-    // Trigger the onComplete callback with the pasted value
+    // After all text handling, check if OTP input is complete and trigger callback
     _handleOnComplete();
   }
 
@@ -305,11 +371,8 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
       // Check if the event is a key press (key down)
       if (event is KeyDownEvent &&
           event.logicalKey == LogicalKeyboardKey.backspace &&
-          _controllers[index].text.isEmpty &&
+          _controllers[index].text.trim().isEmpty &&
           index > 0) {
-        // Clear the text in the previous input field
-        _controllers[index - 1].clear();
-
         // Move focus to the previous input field
         FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
       }
@@ -451,14 +514,15 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
                   cursorOpacityAnimates: widget.cursorOpacityAnimates,
                   enabled: widget.enabled,
                   ignorePointers: widget.ignorePointers,
+                  maxLength: index == widget.length - 1 ? 1 : 2,
                   style:
                       widget.textStyle ??
                       TextStyle(
                         fontSize: widget.size * 0.4,
                         fontWeight: FontWeight.w400,
                       ),
-                  inputFormatters: [LengthLimitingTextInputFormatter(1)],
                   decoration: InputDecoration(
+                    counterText: '',
                     contentPadding:
                         widget.contentPadding ??
                         const EdgeInsets.symmetric(
@@ -516,8 +580,10 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
                   ),
                   onSubmitted: (String value) => _handleOnSubmit(),
                   onChanged: (String value) {
-                    _handleOnChanges();
                     _onTextChanged(value, index);
+
+                    //User given on change function
+                    _handleOnChanges();
                   },
                 ),
               ),
