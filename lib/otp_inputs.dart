@@ -23,10 +23,6 @@ import 'package:otp_plus/utils/enum/otp_field_shape.dart';
 /// )
 /// ```
 class OtpPlusInputs extends StatefulWidget {
-  /// The parent [BuildContext] to use for showing UI elements such as snack bars.
-  /// If `null`, the widget will use its own context.
-  final BuildContext? parentContext;
-
   /// The text for contextMenuBuilder
   final String? pasteText;
 
@@ -128,7 +124,6 @@ class OtpPlusInputs extends StatefulWidget {
     required this.length,
 
     // Context and input behavior
-    this.parentContext,
     this.enabled,
     this.undoController,
     this.textInputAction,

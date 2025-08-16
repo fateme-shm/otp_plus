@@ -113,3 +113,7 @@
 ### 6. Other Notes
 - No changes in public API or constructor parameters.
 - Paste handling logic remains functionally the same.
+
+## \[1.0.7] - 2025-08-16
+* Remove context from library
+* Change description of project

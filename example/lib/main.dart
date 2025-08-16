@@ -52,7 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
             child: OtpPlusInputs(
               size: 50,
               length: 6,
-              parentContext: context,
               shape: OtpFieldShape.square,
               textDirection: TextDirection.ltr,
               onChanged: (code) {

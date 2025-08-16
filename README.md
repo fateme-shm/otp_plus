@@ -28,7 +28,7 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  otp_plus: ^1.0.6
+  otp_plus: ^1.0.7
 ```
 
 Then run:
