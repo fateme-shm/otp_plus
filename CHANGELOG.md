@@ -119,7 +119,5 @@
 * Change description of project
 
 ## \[1.0.8] - 2025-09-22
-* Implement clean controller inputs field data
-
-## \[1.0.9] - 2025-09-22
 * Add supported device
+* Implement clean controller inputs field data
