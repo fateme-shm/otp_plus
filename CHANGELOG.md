@@ -117,3 +117,6 @@
 ## \[1.0.7] - 2025-08-16
 * Remove context from library
 * Change description of project
+
+## \[1.0.8] - 2025-09-22
+* Implement clean controller inputs field data

@@ -28,7 +28,7 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  otp_plus: ^1.0.7
+  otp_plus: ^1.0.8
 ```
 
 Then run:
@@ -74,39 +74,41 @@ class MyOtpScreen extends StatelessWidget {
 
 ## API Reference
 
-### `OtpPlusInputs`
+### `OtpPlusInputs` Parameters
 
-| Parameter               | Type                     | Description                                                      | Default                    |
-|-------------------------|--------------------------|------------------------------------------------------------------|----------------------------|
-| `shape`                 | `OtpFieldShape`          | Shape of each OTP input field (`square`, `underline`, `circle`). | **Required**               |
-| `length`                | `int`                    | Number of OTP digits to input.                                   | **Required**               |
-| `textStyle`             | `TextStyle?`             | Custom text style for digits.                                    | `null`                     |
-| `decoration`            | `InputDecoration?`       | Custom decoration for each field.                                | Defaults based on shape    |
-| `obscureText`           | `bool`                   | Whether to obscure text input.                                   | `false`                    |
-| `obscuringCharacter`    | `String`                 | Character to show when obscuring input.                          | `'*'`                      |
-| `spacing`               | `double`                 | Horizontal spacing between fields.                               | `12`                       |
-| `size`                  | `double`                 | Width and height of each input box.                              | `50`                       |
-| `runSpacing`            | `double`                 | Vertical spacing when inputs wrap to the next line.              | `12`                       |
-| `textDirection`         | `TextDirection`          | Text direction (LTR or RTL).                                     | `TextDirection.ltr`        |
-| `cursorColor`           | `Color`                  | Color of the input cursor.                                       | `Colors.black`             |
-| `enabled`               | `bool?`                  | Enable or disable input fields.                                  | `true`                     |
-| `ignorePointers`        | `bool?`                  | Ignore pointer events on input fields.                           | `false`                    |
-| `cursorWidth`           | `double`                 | Width of the input cursor.                                       | `1.5`                      |
-| `cursorHeight`          | `double?`                | Height of the input cursor.                                      | `null`                     |
-| `cursorRadius`          | `Radius?`                | Radius of cursor corners.                                        | `null`                     |
-| `cursorOpacityAnimates` | `bool?`                  | Animate cursor opacity.                                          | `null`                     |
-| `undoController`        | `UndoHistoryController?` | Undo history controller.                                         | `null`                     |
-| `textInputAction`       | `TextInputAction?`       | Keyboard action button type (next/done).                         | `null`                     |
-| `textCapitalization`    | `TextCapitalization`     | Capitalization behavior for input.                               | `TextCapitalization.none`  |
-| `style`                 | `TextStyle?`             | Override text style for input.                                   | `null`                     |
-| `strutStyle`            | `StrutStyle?`            | Override strut style for input.                                  | `null`                     |
-| `textAlign`             | `TextAlign`              | Text alignment within each input box.                            | `TextAlign.center`         |
-| `textAlignVertical`     | `TextAlignVertical`      | Vertical text alignment within each box.                         | `TextAlignVertical.center` |
-| `contentPadding`        | `EdgeInsets?`            | Inner padding for input fields.                                  | Default symmetric padding  |
-| `onCompleted`           | `void Function(String)?` | Callback when all OTP digits are entered.                        | `null`                     |
-| `borderColor`           | `Color?`                 | Border color in default state.                                   | `Colors.grey`              |
-| `focusedBorderColor`    | `Color?`                 | Border color when focused.                                       | `Colors.black`             |
-| `errorBorderColor`      | `Color?`                 | Border color when error occurs.                                  | `Colors.red`               |
+| Parameter               | Type                     | Description                                                              | Default                                              |
+|-------------------------|--------------------------|--------------------------------------------------------------------------|------------------------------------------------------|
+| `shape`                 | `OtpFieldShape`          | Shape of each OTP input field (`square`, `underline`, `circle`).         | **Required**                                         |
+| `length`                | `int`                    | Number of OTP digits to input.                                           | **Required**                                         |
+| `textStyle`             | `TextStyle?`             | Custom text style for digits inside each field.                          | `null`                                               |
+| `obscureText`           | `bool`                   | Whether to obscure the text (e.g., for passwords).                       | `false`                                              |
+| `obscuringCharacter`    | `String`                 | Character to display when text is obscured.                              | `'*'`                                                |
+| `horizontalSpacing`     | `double`                 | Horizontal spacing between each OTP input field.                         | `10`                                                 |
+| `size`                  | `double`                 | Width and height of each input box.                                      | `50`                                                 |
+| `verticalSpacing`       | `double`                 | Vertical spacing when fields wrap to the next line.                      | `10`                                                 |
+| `textDirection`         | `TextDirection`          | Text direction for the entire widget (`ltr` or `rtl`).                   | `TextDirection.ltr`                                  |
+| `cursorColor`           | `Color`                  | Color of the blinking cursor.                                            | `Colors.black`                                       |
+| `enabled`               | `bool?`                  | Whether the input fields are enabled for interaction.                    | `null` (inherited from theme)                        |
+| `ignorePointers`        | `bool?`                  | Whether to ignore pointer events (tap, drag, etc.) on the fields.        | `null`                                               |
+| `cursorWidth`           | `double`                 | Width of the cursor.                                                     | `1.5`                                                |
+| `cursorHeight`          | `double?`                | Height of the cursor. If null, uses default based on font.               | `null`                                               |
+| `cursorRadius`          | `Radius?`                | Radius for cursor corners (rounded cursor).                              | `null`                                               |
+| `cursorOpacityAnimates` | `bool?`                  | Whether cursor opacity should animate (fade in/out).                     | `null`                                               |
+| `undoController`        | `UndoHistoryController?` | Controller to manage undo/redo history for text fields.                  | `null`                                               |
+| `textInputAction`       | `TextInputAction?`       | Type of action button on the keyboard (e.g., `next`, `done`).            | `null`                                               |
+| `textCapitalization`    | `TextCapitalization`     | Capitalization behavior for input (e.g., `none`, `characters`, `words`). | `TextCapitalization.none`                            |
+| `style`                 | `TextStyle?`             | Optional global text style override (applies to underlying `TextField`). | `null`                                               |
+| `strutStyle`            | `StrutStyle?`            | Optional strut style to control line height and alignment.               | `null`                                               |
+| `textAlign`             | `TextAlign`              | Horizontal alignment of text within each field.                          | `TextAlign.center`                                   |
+| `textAlignVertical`     | `TextAlignVertical`      | Vertical alignment of text within each field.                            | `TextAlignVertical.center`                           |
+| `contentPadding`        | `EdgeInsets?`            | Inner padding of each input field.                                       | `EdgeInsets.symmetric(horizontal: 10, vertical: 10)` |
+| `onComplete`            | `void Function(String)?` | Called when all fields are filled (OTP is complete).                     | `null`                                               |
+| `onChanged`             | `void Function(String)?` | Called whenever the OTP value changes (on any field update).             | `null`                                               |
+| `onSubmit`              | `void Function(String)?` | Called when user submits (e.g., presses enter/done on keyboard).         | `null`                                               |
+| `borderColor`           | `Color?`                 | Border color in default (unfocused, non-error) state.                    | `Colors.grey`                                        |
+| `focusedBorderColor`    | `Color?`                 | Border color when the field is focused.                                  | `Colors.black`                                       |
+| `errorBorderColor`      | `Color?`                 | Border color when the field is in error state.                           | `Colors.red`                                         |
+| `pasteText`             | `String?`                | Label text for the “Paste” option in context menu (long-press menu).     | `'Paste'`                                            |
 
 ### `OtpFieldShape`
 

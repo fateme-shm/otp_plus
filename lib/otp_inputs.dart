@@ -193,6 +193,30 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
     super.initState();
   }
 
+  /// Disposes all the TextEditingControllers used by the OTP input fields.
+  ///
+  /// This method is called when the widget is permanently removed from the widget tree
+  /// to release the resources held by the controllers and avoid memory leaks.
+  /// It is important to call dispose on each controller here before calling super.dispose().
+  @override
+  void dispose() {
+    for (TextEditingController controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  /// Clears the text value of all the TextEditingControllers used by the OTP input fields.
+  ///
+  /// This method resets all input fields to empty strings, effectively clearing the OTP inputs.
+  void clearControllerData() {
+    for (TextEditingController controller in _controllers) {
+      controller.text = '';
+    }
+
+    _focusNodes.first.requestFocus();
+  }
+
   /// Initializes the OTP input fields by creating focus nodes and text controllers.
   ///
   /// This function sets up three lists based on the given `length`:

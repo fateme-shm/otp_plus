@@ -28,6 +28,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final GlobalKey<OtpPlusInputsState> otpKey = GlobalKey<OtpPlusInputsState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
           const SizedBox(height: 30),
           Center(
             child: OtpPlusInputs(
+              key: otpKey,
               size: 50,
               length: 6,
               shape: OtpFieldShape.square,
@@ -65,6 +68,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Add OTP verification logic here
                 debugPrint('OTP completed: $code');
               },
+            ),
+          ),
+          const SizedBox(height: 24),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                /// Call clearControllerData() via the key to clear input fields value
+                otpKey.currentState?.clearControllerData();
+                setState(() {});
+              },
+              child: const Text('Clear OTP'),
             ),
           ),
         ],
