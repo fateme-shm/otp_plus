@@ -1,6 +1,6 @@
 name: otp_plus
 description: 'powerful, customizable package for handling PIN code. otp_plus makes it easy to implement elegant and responsive code input UIs.'
-version: 1.0.8
+version: 1.0.9
 homepage: https://github.com/fateme-shm/otp_plus
 repository: https://github.com/fateme-shm/otp_plus
 issue_tracker: https://github.com/fateme-shm/otp_plus/issues
@@ -21,3 +21,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+platforms:
+  ios:
+  web:
+  android:
