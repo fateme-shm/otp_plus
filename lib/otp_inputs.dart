@@ -449,6 +449,41 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
     }
   }
 
+  Future<void> handleText({required String text}) async {
+    // Remove all non-digit characters using a regular expression
+    String value = text.replaceAll(RegExp(r'\D'), '');
+
+    // Limit digits to max OTP length
+    if (value.length > widget.length) {
+      value = value.substring(0, widget.length);
+    }
+
+    // Proceed only if multiple digits are pasted
+    if (value.isNotEmpty) {
+      // Loop through each OTP field and assign the corresponding digit
+      for (int i = 0; i < widget.length; i++) {
+        if (i < value.length) {
+          // Assign digit to the controller
+          _controllers[i].text = value[i];
+        } else {
+          // Clear remaining fields if pasted value is shorter than total fields
+          _controllers[i].clear();
+        }
+      }
+
+      // Move focus to the field after the last pasted character,
+      // or unfocus if all fields are filled
+      if (value.length < widget.length) {
+        _focusNodes[value.length].requestFocus();
+      } else {
+        _focusNodes.last.unfocus();
+      }
+
+      //Call onComplete when controllers are filled
+      _handleOnComplete();
+    }
+  }
+
   /// Builds and returns the complete OTP value from all text controllers.
   String _retrieveFullCode() {
     // Concatenate the text values from each OTP field's controller
