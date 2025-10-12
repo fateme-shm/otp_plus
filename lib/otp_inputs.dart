@@ -672,14 +672,13 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
                     onSubmitted: (String value) => _handleOnSubmit(),
                     onChanged: (String value) {
                       //when user paste the code from suggestion is ios
-                      if (value.length > 1) {
-                        handleText(text: value);
-                      } else {
-                        _onTextChanged(value, index);
-                      }
-
-                      //User given on change function
-                      _handleOnChanges();
+                        if (value.length > 1) {
+                          handleText(text: value);
+                        } else {
+                          _onTextChanged(value, index);
+                        }
+                        //User given on change function
+                        _handleOnChanges();
                     },
                   ),
                 ),
