@@ -1,7 +1,11 @@
+import 'dart:io';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
+import 'package:sms_autofill/sms_autofill.dart';
 import 'package:otp_plus/utils/enum/otp_field_shape.dart';
 
 /// otp_plus: A Flutter package providing customizable OTP input widgets.
@@ -116,6 +120,9 @@ class OtpPlusInputs extends StatefulWidget {
   /// Border color when the input field has an error.
   final Color? errorBorderColor;
 
+  /// Enable/disable sms autofill
+  final bool enableAutoFill;
+
   const OtpPlusInputs({
     super.key,
 
@@ -165,13 +172,16 @@ class OtpPlusInputs extends StatefulWidget {
     // Other
     this.ignorePointers,
     this.pasteText,
+
+    //!Hint Autofill is not working correctly in web platform if user put some number in field and then try to focus on field again
+    this.enableAutoFill = false,
   });
 
   @override
   State<OtpPlusInputs> createState() => OtpPlusInputsState();
 }
 
-class OtpPlusInputsState extends State<OtpPlusInputs> {
+class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
   /// List of [FocusNode]s managing focus for each OTP input field.
   /// Used to control and track focus state individually.
   late final List<FocusNode> _focusNodes;
@@ -190,7 +200,30 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
   @override
   void initState() {
     _initializeOtpFields(widget.length);
+
+    // Start listening for OTP code if autofill is enabled
+    _listenForOtpCode();
+
+    // Get app signature for SMS autofill (Android)
+    SmsAutoFill().getAppSignature.then((signature) {
+      if (widget.enableAutoFill) log('signature: $signature');
+    });
+
     super.initState();
+  }
+
+  /// Listens for OTP code autofill from SMS when enabled.
+  ///
+  /// This method checks if OTP autofill is enabled (`enableAutoFill`).
+  /// If true it starts listening
+  /// for incoming SMS messages to automatically fill in the OTP code.
+  void _listenForOtpCode() {
+    if (!widget.enableAutoFill) return;
+
+    if (!kIsWeb && Platform.isAndroid) {
+      /// for listen sms autofill
+      listenForCode();
+    }
   }
 
   /// Disposes all the TextEditingControllers used by the OTP input fields.
@@ -203,7 +236,78 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
     for (TextEditingController controller in _controllers) {
       controller.dispose();
     }
+
+    if (widget.enableAutoFill) {
+      //for cancel listener of sms autofill
+      cancel();
+      unregisterListener();
+    }
+
     super.dispose();
+  }
+
+  /// Called when a new OTP code is received through autofill.
+  ///
+  /// This override is triggered automatically when the system detects
+  /// a new OTP code (for example, from an SMS message).
+  /// If autofill is enabled (`enableAutoFill`) and the field itself is active (`enabled`),
+  /// the received code is passed to the `handleText` method to update the input UI.
+  @override
+  void codeUpdated() {
+    if (widget.enableAutoFill && widget.enabled == true) {
+      handleText(text: code ?? '');
+    }
+  }
+
+  /// Handles OTP text input and updates all text fields accordingly.
+  ///
+  /// This method processes any input text (manual entry or autofill),
+  /// ensuring that only numeric characters are kept and that the text
+  /// length does not exceed the maximum OTP length (`widget.length`).
+  ///
+  /// The method then:
+  /// - Clears all existing field controllers.
+  /// - Distributes each digit of the input text across the OTP fields.
+  /// - Moves the focus to the next empty field, or removes focus if all fields are filled.
+  /// - Triggers the `onComplete` callback once all fields contain input.
+  ///
+  /// This function supports both manual pasting and automatic SMS autofill.
+  Future<void> handleText({required String text}) async {
+    // Remove all non-digit characters using a regular expression
+    String value = text.replaceAll(RegExp(r'\D'), '');
+
+    // Limit digits to max OTP length
+    if (value.length > widget.length) {
+      value = value.substring(0, widget.length);
+    }
+
+    // Proceed only if multiple digits are pasted
+    if (value.isNotEmpty) {
+      // Clear all controllers
+      clearControllerData();
+
+      // Loop through each OTP field and assign the corresponding digit
+      for (int i = 0; i < widget.length; i++) {
+        if (i < value.length) {
+          // Assign digit to the controller
+          _controllers[i].text = value[i];
+        } else {
+          // Clear remaining fields if pasted value is shorter than total fields
+          _controllers[i].clear();
+        }
+      }
+
+      // Move focus to the field after the last pasted character,
+      // or unfocus if all fields are filled
+      if (value.length < widget.length) {
+        _focusNodes[value.length].requestFocus();
+      } else {
+        _focusNodes.last.unfocus();
+      }
+
+      //Call onComplete when controllers are filled
+      _handleOnComplete();
+    }
   }
 
   /// Clears the text value of all the TextEditingControllers used by the OTP input fields.
@@ -534,6 +638,8 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
                   enabled: widget.enabled,
                   ignorePointers: widget.ignorePointers,
                   maxLength: index == widget.length - 1 ? 1 : 2,
+                  maxLengthEnforcement: MaxLengthEnforcement.none,
+                  autofillHints: const [AutofillHints.oneTimeCode],
                   style:
                       widget.textStyle ??
                       TextStyle(
@@ -599,7 +705,12 @@ class OtpPlusInputsState extends State<OtpPlusInputs> {
                   ),
                   onSubmitted: (String value) => _handleOnSubmit(),
                   onChanged: (String value) {
-                    _onTextChanged(value, index);
+                    //when user paste the code from suggestion is ios
+                    if (value.length > 1) {
+                      handleText(text: value);
+                    } else {
+                      _onTextChanged(value, index);
+                    }
 
                     //User given on change function
                     _handleOnChanges();

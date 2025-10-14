@@ -55,6 +55,8 @@ class _MyHomePageState extends State<MyHomePage> {
               key: otpKey,
               size: 50,
               length: 6,
+              // If you need to enable OTP autofill from SMS
+              // enableAutoFill:true,
               shape: OtpFieldShape.square,
               textDirection: TextDirection.ltr,
               onChanged: (code) {
