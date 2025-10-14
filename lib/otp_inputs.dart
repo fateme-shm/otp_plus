@@ -255,7 +255,7 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
   @override
   void codeUpdated() {
     if (widget.enableAutoFill && widget.enabled == true) {
-      handleText(text: code ?? '');
+      _handleText(text: code ?? '');
     }
   }
 
@@ -272,7 +272,7 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
   /// - Triggers the `onComplete` callback once all fields contain input.
   ///
   /// This function supports both manual pasting and automatic SMS autofill.
-  Future<void> handleText({required String text}) async {
+  Future<void> _handleText({required String text}) async {
     // Remove all non-digit characters using a regular expression
     String value = text.replaceAll(RegExp(r'\D'), '');
 
@@ -510,9 +510,7 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
   /// and distributes them into the OTP input fields represented by `_controllers`.
   /// It also manages focus movement and triggers the `onComplete` callback if the OTP is complete.
   ///
-  /// [tappedIndex] - The index of the field that was tapped (optional, could be used for smarter focus handling).
-  /// This function not work in Web platform [kIsWeb]
-  Future<void> _handlePaste(int tappedIndex) async {
+  Future<void> _handlePaste() async {
     // Get text data from the system clipboard
     ClipboardData? clipboard = await Clipboard.getData(Clipboard.kTextPlain);
 
@@ -613,10 +611,8 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
                           anchors: editableTextState.contextMenuAnchors,
                           buttonItems: [
                             ContextMenuButtonItem(
-                              onPressed: () async {
-                                // Trigger your custom paste logic
-                                _handlePaste(index);
-                              },
+                              // Trigger your custom paste logic
+                              onPressed: () async => _handlePaste(),
                               label: widget.pasteText ?? 'Paste',
                             ),
                           ],
@@ -707,7 +703,7 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
                   onChanged: (String value) {
                     //when user paste the code from suggestion is ios
                     if (value.length > 1) {
-                      handleText(text: value);
+                      _handleText(text: value);
                     } else {
                       _onTextChanged(value, index);
                     }
