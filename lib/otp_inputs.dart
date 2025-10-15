@@ -22,7 +22,7 @@ import 'package:otp_plus/utils/enum/otp_field_shape.dart';
 ///   length: 6,
 ///   shape: OtpFieldShape.square,
 ///   onComplete: (code) {
-///     print('OTP Entered: $code');
+///     log('OTP Entered: $code');
 ///   },
 /// )
 /// ```
@@ -276,38 +276,39 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
     // Remove all non-digit characters using a regular expression
     String value = text.replaceAll(RegExp(r'\D'), '');
 
+    if (value.isEmpty) {
+      return;
+    }
+
     // Limit digits to max OTP length
     if (value.length > widget.length) {
       value = value.substring(0, widget.length);
     }
 
-    // Proceed only if multiple digits are pasted
-    if (value.isNotEmpty) {
-      // Clear all controllers
-      clearControllerData();
+    // Clear all controllers
+    clearControllerData();
 
-      // Loop through each OTP field and assign the corresponding digit
-      for (int i = 0; i < widget.length; i++) {
-        if (i < value.length) {
-          // Assign digit to the controller
-          _controllers[i].text = value[i];
-        } else {
-          // Clear remaining fields if pasted value is shorter than total fields
-          _controllers[i].clear();
-        }
-      }
-
-      // Move focus to the field after the last pasted character,
-      // or unfocus if all fields are filled
-      if (value.length < widget.length) {
-        _focusNodes[value.length].requestFocus();
+    // Loop through each OTP field and assign the corresponding digit
+    for (int i = 0; i < widget.length; i++) {
+      if (i < value.length) {
+        // Assign digit to the controller
+        _controllers[i].text = value[i];
       } else {
-        _focusNodes.last.unfocus();
+        // Clear remaining fields if pasted value is shorter than total fields
+        _controllers[i].clear();
       }
-
-      //Call onComplete when controllers are filled
-      _handleOnComplete();
     }
+
+    // Move focus to the field after the last pasted character,
+    // or unfocus if all fields are filled
+    if (value.length < widget.length) {
+      _focusNodes[value.length].requestFocus();
+    } else {
+      _focusNodes.last.unfocus();
+    }
+
+    //Call onComplete when controllers are filled
+    _handleOnComplete();
   }
 
   /// Clears the text value of all the TextEditingControllers used by the OTP input fields.
@@ -500,7 +501,7 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
         FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
       }
     } catch (error) {
-      debugPrint(error.toString());
+      log(error.toString());
     }
   }
 
@@ -701,10 +702,12 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
                   ),
                   onSubmitted: (String value) => _handleOnSubmit(),
                   onChanged: (String value) {
-                    //when user paste the code from suggestion is ios
-                    if (value.length > 1) {
+                    if (value.length >= widget.length) {
+                      // When user paste the code from suggestion is ios
+                      // Bulk typing (paste or keyboard autoFill)
                       _handleText(text: value);
                     } else {
+                      // Regular typing (one by one)
                       _onTextChanged(value, index);
                     }
 

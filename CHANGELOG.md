@@ -118,8 +118,12 @@
 * Remove context from library
 * Change description of project
 
-## \[1.0.8] - 2025-09-22
+## \[1.0.8] - 2025-08-22
 * Implement clean controller inputs field data
 
-## \[1.0.9] - 2025-09-22
+## \[1.0.9] - 2025-08-22
 * Add supported device
+* 
+## \[1.1.0] - 2025-09-16
+* Add SMS auto fill for IOS/Android/Web
+* fix some reported bug
