@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.2] - 2026-04-20
+
+* Add autofill signature logging
+
 ## [1.1.1] - 2026-04-20
 
 * Fix last field problem that user can write more than one number
@@ -46,8 +50,8 @@
 
 * Added `maxLength`:
 
-  * Set to 2 for all fields except last.
-  * Set to 1 for the last field.
+    * Set to 2 for all fields except last.
+    * Set to 1 for the last field.
 * Added `counterText: ''` to hide character counter.
 * Changed order of `onChanged` callback calls to run internal logic before user callback.
 
@@ -134,11 +138,11 @@
 * Initial release of `otp_plus` package
 * `OtpPlusInputs` widget supporting:
 
-  * Customizable OTP length and field shapes (`square`, `underline`, `circle`)
-  * Paste detection with automatic digit distribution
-  * Obscured input with configurable obscuring character
-  * Custom styling options for text, cursor, spacing, and decoration
-  * Keyboard navigation with backspace focus handling
-  * Callback triggered on OTP completion
-  * Support for LTR and RTL text directions
-  * Custom context menu with paste functionality (excluding web platform)
+    * Customizable OTP length and field shapes (`square`, `underline`, `circle`)
+    * Paste detection with automatic digit distribution
+    * Obscured input with configurable obscuring character
+    * Custom styling options for text, cursor, spacing, and decoration
+    * Keyboard navigation with backspace focus handling
+    * Callback triggered on OTP completion
+    * Support for LTR and RTL text directions
+    * Custom context menu with paste functionality (excluding web platform)

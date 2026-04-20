@@ -123,6 +123,9 @@ class OtpPlusInputs extends StatefulWidget {
   /// Enable/disable sms autofill
   final bool enableAutoFill;
 
+  /// Get Signature
+  final void Function(String signature)? onGetSignature;
+
   const OtpPlusInputs({
     super.key,
 
@@ -175,6 +178,9 @@ class OtpPlusInputs extends StatefulWidget {
 
     //!Hint Autofill is not working correctly in web platform if user put some number in field and then try to focus on field again
     this.enableAutoFill = false,
+
+    // get signature
+    this.onGetSignature,
   });
 
   @override
@@ -206,7 +212,10 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
 
     // Get app signature for SMS autofill (Android)
     SmsAutoFill().getAppSignature.then((signature) {
-      if (widget.enableAutoFill) log('signature: $signature');
+      if (widget.enableAutoFill) {
+        log('signature: $signature');
+        widget.onGetSignature?.call(signature);
+      }
     });
 
     super.initState();

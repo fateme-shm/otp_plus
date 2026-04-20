@@ -1,6 +1,6 @@
 name: otp_plus
 description: 'powerful, customizable package for handling PIN code with automatic fill code. otp_plus makes it easy to implement elegant and responsive code input UIs.'
-version: 1.1.1
+version: 1.1.2
 homepage: https://github.com/fateme-shm/otp_plus
 repository: https://github.com/fateme-shm/otp_plus
 issue_tracker: https://github.com/fateme-shm/otp_plus/issues
