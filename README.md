@@ -29,7 +29,7 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  otp_plus: ^1.1.0
+  otp_plus: ^1.1.1
 ```
 
 Then run:
@@ -79,9 +79,9 @@ class MyOtpScreen extends StatelessWidget {
 
 | Parameter               | Type                     | Description                                                              | Default                                              |
 |-------------------------|--------------------------|--------------------------------------------------------------------------|------------------------------------------------------|
-| `shape`                 | `OtpFieldShape`          | Shape of each OTP input field (`square`, `underline`, `circle`).         |
-| `enableAutoFill`        | `bool`                   | Handle code fill from sms                                                | 
-**Required**                                         |
+| `shape`                 | `OtpFieldShape`          | Shape of each OTP input field (`square`, `underline`, `circle`).         |                                                      |
+| `enableAutoFill`        | `bool`                   | Handle code fill from sms                                                |                                                      |
+| **Required**            |                          |                                                                          |                                                      |
 | `length`                | `int`                    | Number of OTP digits to input.                                           | **Required**                                         |
 | `textStyle`             | `TextStyle?`             | Custom text style for digits inside each field.                          | `null`                                               |
 | `obscureText`           | `bool`                   | Whether to obscure the text (e.g., for passwords).                       | `false`                                              |

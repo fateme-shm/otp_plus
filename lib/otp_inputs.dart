@@ -702,6 +702,20 @@ class OtpPlusInputsState extends State<OtpPlusInputs> with CodeAutoFill {
                   ),
                   onSubmitted: (String value) => _handleOnSubmit(),
                   onChanged: (String value) {
+                    // HARD LIMIT for last field
+                    if (index == widget.length - 1 && value.length > 1) {
+                      String trimmed = value.substring(0, 1);
+                      _controllers[index].text = trimmed;
+
+                      // Keep cursor at end
+                      _controllers[index].selection =
+                          TextSelection.fromPosition(
+                            TextPosition(offset: trimmed.length),
+                          );
+
+                      value = trimmed;
+                    }
+
                     if (value.length >= widget.length) {
                       // When user paste the code from suggestion is ios
                       // Bulk typing (paste or keyboard autoFill)
