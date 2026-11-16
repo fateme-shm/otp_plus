@@ -1,18 +1,19 @@
 name: otp_plus
 description: 'powerful, customizable package for handling PIN code with automatic fill code. otp_plus makes it easy to implement elegant and responsive code input UIs.'
-version: 1.1.2
+version: 2.0.0
 homepage: https://github.com/fateme-shm/otp_plus
 repository: https://github.com/fateme-shm/otp_plus
 issue_tracker: https://github.com/fateme-shm/otp_plus/issues
 
 environment:
-  sdk: ^3.8.1
-  flutter: ">=1.17.0"
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  sms_autofill: ^2.4.1
+  material_ui: ^1.11.0
+  sms_autofill: ^2.6.1
 
 dev_dependencies:
   flutter_test:
