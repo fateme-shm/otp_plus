@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.0] - 2026-11-16
+
+* **Breaking:** Migrate from `package:flutter/material.dart` to standalone `package:material_ui/material_ui.dart`
+* Require Flutter `>=3.47.0` and Dart `^3.13.0`
+* Add `material_ui` as a direct dependency
+
 ## [1.1.2] - 2026-04-20
 
 * Add autofill signature logging

@@ -29,7 +29,8 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  otp_plus: ^1.1.1
+  otp_plus: ^2.0.0
+  material_ui: ^1.11.0
 ```
 
 Then run:
@@ -38,11 +39,13 @@ Then run:
 flutter pub get
 ```
 
+> **Note:** From `2.0.0`, this package uses the standalone [`material_ui`](https://pub.dev/packages/material_ui) package. Your app should import `package:material_ui/material_ui.dart` instead of `package:flutter/material.dart`. Requires Flutter `>=3.47.0`.
+
 ## Usage
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:otp_plus/otp_plus_inputs.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:otp_plus/otp_plus.dart';
 
 class MyOtpScreen extends StatelessWidget {
   @override
@@ -62,7 +65,7 @@ class MyOtpScreen extends StatelessWidget {
             debugPrint('On Submit : $code');
           },
           //Add optional values here
-          onCompleted: (code) {
+          onComplete: (code) {
             // Add OTP verification logic here
             debugPrint('OTP entered: $code');
           },
@@ -125,7 +128,7 @@ Defines the visual style of the OTP input fields:
 
 * The widget automatically manages focus navigation between fields on input and backspace key
   presses.
-* Use `onCompleted` to capture the final OTP code when all fields are filled.
+* Use `onComplete` to capture the final OTP code when all fields are filled.
 * The widget uses `TextInputFormatter` to restrict input to single digits.
 
 ## Contribution
